@@ -84,7 +84,7 @@ For detailed API documentation, please see [SKILL.md](./SKILL.md).
 
 ## About
 
-Built by **hilongjw** for the OpenClaw Community 🦞.
+Built by **SeedeAI** for the OpenClaw Community 🦞.
 
 ## License
 
