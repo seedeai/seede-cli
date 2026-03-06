@@ -1,6 +1,6 @@
 {
   "name": "seede-cli",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Seede AI CLI Tool",
   "main": "bin/seede.js",
   "bin": {

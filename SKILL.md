@@ -1,7 +1,7 @@
 ---
 name: seede
 version: 1.0.0
-description: Use Seede AI to generate professional design graphics based on text or images. Supports generating posters, social media graphics, UI designs, etc.
+description: Use Seede AI CLI to generate professional design graphics based on text or images. Supports generating posters, social media graphics, UI designs, etc.
 homepage: https://seede.ai
 metadata:
   {
@@ -10,17 +10,14 @@ metadata:
         "emoji": "🌱",
         "category": "design",
         "requires":
-          {
-            "env": ["SEEDE_API_TOKEN"],
-            "bins": ["bash", "curl", "python3", "base64", "file"],
-          },
+          { "env": ["SEEDE_API_TOKEN"], "bins": ["node", "npm", "seede"] },
       },
   }
 ---
 
-# Seede AI Skill
+# Seede AI Skill (CLI)
 
-Quickly generate professional design solutions through the Seede AI API based on text descriptions, reference images, or brand themes.
+Quickly generate professional design solutions through the Seede AI CLI based on text descriptions, reference images, or brand themes.
 
 ## When to Use
 
@@ -31,131 +28,129 @@ Quickly generate professional design solutions through the Seede AI API based on
 
 ## Prerequisites
 
-1. **Obtain API Token:**
-   - Visit [Seede AI Token Management](https://seede.ai/profile/token)
-   - Create and copy your API Token
+1. **Node.js**: Ensure Node.js is installed in the environment.
+2. **Installation**:
 
-2. **Set Environment Variable:**
+   Install via npm:
+
    ```bash
-   export SEEDE_API_TOKEN="your_api_token"
+   npm install -g seede-cli
    ```
 
-## API Base URL
+3. **Authentication**:
+   - **Option 1: CLI Registration (No token required)**
+     Agents can create a new account directly via CLI:
 
-```
-https://api.seede.ai
-```
+     ```bash
+     seede register
+     ```
 
-## Authentication
+     Follow the interactive prompts to create an account. The token will be saved automatically.
 
-Include the API Token in the request headers:
-
-```bash
-Authorization: $SEEDE_API_TOKEN
-```
+   - **Option 2: API Token**
+     - Visit [Seede AI Token Management](https://seede.ai/profile/token)
+     - Set the environment variable:
+       ```bash
+       export SEEDE_API_TOKEN="your_api_token"
+       ```
 
 ## Core Operations
 
-### Use the Bundled CLI Helper (Recommended)
+### Create Design
 
-This skill includes a small helper script at `{baseDir}/scripts/seede.sh` that wraps the Seede API and handles polling.
-
-```bash
-# List tasks
-bash "{baseDir}/scripts/seede.sh" tasks
-
-# List designs
-bash "{baseDir}/scripts/seede.sh" designs
-
-# Create a design (defaults to 1080x1440)
-bash "{baseDir}/scripts/seede.sh" create "Event Poster" "Minimalist tech-style launch event poster @SeedeTheme({'value':'tech'})"
-
-# Create a design with custom size
-bash "{baseDir}/scripts/seede.sh" create "Post" "A futuristic city" 1080 1440
-
-# Get task details
-bash "{baseDir}/scripts/seede.sh" get TASK_ID
-
-# Upload an asset (returns asset URL JSON)
-bash "{baseDir}/scripts/seede.sh" upload /path/to/logo.png
-
-# List available models
-bash "{baseDir}/scripts/seede.sh" models
-```
-
-### Create Design Task (Most Common)
-
-Create an asynchronous design task. Supports specifying models, sizes, and reference images.
+Generate a new design using the `create` command.
 
 ```bash
-curl -X POST "https://api.seede.ai/api/task/create" \
-  -H "Authorization: $SEEDE_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Social Media Poster",
-    "prompt": "Minimalist style tech launch event poster",
-    "size": {"w": 1080, "h": 1440},
-    "model": "gemini-3-flash"
-  }'
+# Basic usage
+seede create --prompt "A futuristic city poster with neon lights" --scene "poster"
+
+# Specify size and format
+seede create --prompt "Social media post" --size "1080x1080" --format "png"
+
+# Non-interactive mode (Recommended for Agents)
+seede create --no-interactive --prompt "Tech event banner" --scene "socialMedia" --width 1200 --height 630
 ```
 
-### Get Task Status and Results
+**Options:**
 
-An `id` is returned after task creation. Since design usually takes 30-90 seconds, polling is required.
+- `-p, --prompt <string>`: Description of the design.
+- `-s, --scene <string>`: Scene type (`socialMedia`, `poster`, `scrollytelling`).
+- `--size <string>`: Canvas size (`1080x1440`, `1080x1920`, `1920x1080`, `Custom`).
+- `-m, --model <string>`: Model to use (e.g., `deepseek-v3`).
+- `--no-interactive`: Disable interactive prompts.
+
+### Manage Designs
+
+List recent designs.
 
 ```bash
-# Get details of a specific task
-curl -s "https://api.seede.ai/api/task/{taskId}" \
-  -H "Authorization: $SEEDE_API_TOKEN" | jq .
-
-# Get all task list
-curl -s "https://api.seede.ai/api/task" \
-  -H "Authorization: $SEEDE_API_TOKEN" | jq .
+seede designs --limit 5
 ```
+
+**Options:**
+
+- `-l, --limit <number>`: Number of designs to list.
+- `-q, --search <string>`: Search designs by keyword.
 
 ### Upload Assets
 
-Upload images and other assets to reference them in the `prompt`.
+Upload an image to use as a reference or material.
 
 ```bash
-# Upload an asset (returns asset URL JSON)
-bash "{baseDir}/scripts/seede.sh" upload /path/to/logo.png
+seede upload ./path/to/image.png
 ```
 
-## Advanced Features
+Returns an asset URL that can be used in the prompt.
+
+### Open Design
+
+Get the URL to view or edit a design.
+
+```bash
+seede open <designId>
+```
+
+## Advanced Usage
 
 ### Referencing Assets
 
-Reference uploaded assets in the `prompt` using `@SeedeMaterial`:
-`Design description...@SeedeMaterial({"filename":"logo.jpg","url":"https://...","tag":"logo"})`
+After uploading an asset, use the returned URL in your prompt with `@SeedeMaterial`:
 
-### Setting Brand Colors
+```bash
+seede create --prompt "Poster with logo ... @SeedeMaterial({'url':'<ASSET_URL>','tag':'logo'})"
+```
 
-Specify themes and colors using `@SeedeTheme`:
-`Design description...@SeedeTheme({"value":"midnight","colors":["#1E293B","#0F172A"]})`
+### Brand Colors
 
-### Reference Image Generation
+Specify themes and colors using `@SeedeTheme` in the prompt:
 
-Use `@SeedeReferenceImage` to guide design style or layout:
-`@SeedeReferenceImage(url:"...", tag:"style,layout")`
+```bash
+seede create --prompt "Corporate flyer ... @SeedeTheme({'value':'midnight','colors':['#1E293B','#0F172A']})"
+```
 
-## Workflow
+## Agent Integration Examples
 
-1. **(Optional) Upload Assets**: Obtain asset URL.
-2. **Create Task**: Call `/api/task/create` to get `task_id`.
-3. **Wait for Completion**: Poll `GET /api/task/:id` until the task status is completed.
-4. **Get Outputs**:
-   - **Design Image**: `urls.image`
-   - **Edit Link**: `urls.project` (requires login to access)
-   - **HTML Code**: `/api/task/:id/html`
+**User Request:**
 
-## Useful Tips
+> "Help me design a tech-style event poster using Seede AI"
 
-1. **Response Time**: Task generation usually takes 30-90 seconds, please ensure there is timeout handling.
-2. **Image Format**: webp is recommended for smaller size and faster loading speed.
-3. **Model Selection**: `gemini-3-flash` is used by default, available models can be viewed via `GET /api/task/models`.
-4. **Embedded Editing**: You can use `https://seede.ai/design-embed/{projectId}?token={token}` to embed the editor in your application.
+**Agent Command:**
 
----
+```bash
+seede create --no-interactive --prompt "tech-style event poster" --scene "poster"
+```
 
-Built by **SeedeAI** for the OpenClaw community 🦞
+**User Request:**
+
+> "Upload this logo.png and use it to create a business card"
+
+**Agent Command:**
+
+1. Upload the image:
+   ```bash
+   seede upload logo.png
+   ```
+2. Create design with the returned URL:
+   ```bash
+   seede create --no-interactive --prompt "Business card with logo @SeedeMaterial({'url':'<URL_FROM_STEP_1>','tag':'logo'})" --scene "poster"
+   ```

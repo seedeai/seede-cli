@@ -1,119 +1,163 @@
-# Seede AI Skill for OpenClaw
+# Seede AI CLI
 
 English | [中文版](./README_CN.md)
 
-> Generate professional designs using Seede AI based on text or images. Supports generating posters, social media graphics, UI designs, and more.
+> The official CLI tool for [Seede AI](https://seede.ai) - Generate professional designs using AI directly from your terminal.
 
-Official Website: [https://seede.ai](https://seede.ai)
+Seede CLI allows you to create designs, manage your portfolio, and upload assets without leaving your command line. It is also designed to work seamlessly as a Skill for AI Agents like OpenClaw.
 
 ## Features
 
-- 🎨 **Text to Design** - Generate beautiful designs through natural language descriptions
-- 🖼️ **Image Reference** - Mimic the style, color, or layout of a reference image
-- 🎨 **Brand Themes** - Support for specifying brand color schemes and themes
-- 📤 **Multi-format Export** - Supports exporting to WebP, PNG, JPG, etc.
-- 📁 **Asset Management** - Upload and reference logos or custom images
+- 🎨 **Text to Design**: Generate designs from natural language descriptions.
+- 🖼️ **Asset Management**: Upload images to use as references or materials in your designs.
+- 📁 **Design Management**: List, search, and view your generated designs.
+- 🤖 **Agent Ready**: Optimized for both human interactive use and programmatic access by AI agents.
+- 🔐 **Flexible Auth**: Supports interactive login and environment variable authentication.
 
 ## Installation
 
-### Manual Installation
+### Install from npm
 
 ```bash
-# Clone or download the Skill
-cp -r seede-skill ~/.clawdbot/skills/seede
+npm install -g seede-cli
 ```
 
-## Configuration
+### From Source
 
-### 1. Get API Token
+```bash
+# Clone the repository
+git clone https://github.com/seede-ai/seede-skill.git
+cd seede-skill
 
-1. Visit [Seede AI Token Management](https://seede.ai/profile/token)
-2. Create and copy your **API Token**
+# Install dependencies
+npm install
 
-### 2. Set Environment Variables
+# Link the command globally
+npm link
+```
+
+Now you can use the `seede` command anywhere.
+
+## Authentication
+
+### Interactive Login
+
+For personal use, simply run:
+
+```bash
+seede login
+```
+
+Follow the prompts to log in via Email or Phone. The token will be stored securely in your system configuration.
+
+### Environment Variable
+
+For CI/CD or Agent usage, you can set the `SEEDE_API_TOKEN` environment variable. This takes precedence over the stored login session.
+
+1. Get your API Token from [Seede AI Token Management](https://seede.ai/profile/token).
+2. Set the variable:
 
 ```bash
 export SEEDE_API_TOKEN="your_api_token"
 ```
 
-It is recommended to add this to your `~/.bashrc` or `~/.zshrc`.
+You can also use a `.env` file in the project root.
 
 ## Usage
 
-### CLI Assistant
+### Create a Design
+
+Generate a new design using the `create` command.
+
+**Interactive Mode:**
 
 ```bash
-# Create a design task
-./scripts/seede.sh create "Event Poster" "Minimalist tech-style launch event poster @SeedeTheme({'value':'tech'})"
-
-# View task list
-./scripts/seede.sh tasks
-
-# View designs list
-./scripts/seede.sh designs
-
-# Get details of a specific task
-./scripts/seede.sh get TASK_ID
-
-# Upload assets
-./scripts/seede.sh upload logo.png
-
-# View available models
-./scripts/seede.sh models
+seede create
 ```
 
-### Non-Interactive Mode (For Agents)
-
-For automation or agent usage, you can use flags to skip prompts:
+**Command Line Arguments:**
 
 ```bash
-# Create a design without prompts
-./bin/seede.js create --no-interactive \
-  -p "A futuristic city poster" \
-  -n "City Poster" \
-  -s "poster" \
-  -f "png" \
-  --size "1080x1920"
+seede create --prompt "A futuristic city poster with neon lights" --scene "poster" --format "png"
 ```
 
 **Options:**
 
-- `--no-interactive`: Disable interactive prompts (Required for non-interactive mode)
-- `-n, --name <string>`: Design name
-- `-p, --prompt <string>`: Design description (Required)
-- `-s, --scene <string>`: Scene type (`socialMedia`, `poster`, `scrollytelling`)
-- `-f, --format <string>`: Output format (`webp`, `png`, `jpg`)
-- `--size <string>`: Size (`1080x1440`, `1080x1920`, `1920x1080`, `Custom`)
-- `-w, --width <number>`: Custom width
-- `-h, --height <string>`: Custom height
-- `-m, --model <string>`: Model to use
+- `-n, --name <string>`: Design name (default: "My design project")
+- `-p, --prompt <string>`: **Required** in non-interactive mode. Description of the design.
+- `-s, --scene <string>`: Scene type (`socialMedia`, `poster`, `scrollytelling`, or empty)
+- `-f, --format <string>`: Output format (`webp`, `png`, `jpg`, default: `webp`)
+- `--size <string>`: Canvas size (`1080x1440`, `1080x1920`, `1920x1080`, `Custom`)
+- `-w, --width <number>`: Custom width (if size is Custom)
+- `-h, --height <string>`: Custom height (number or "auto", if size is Custom)
+- `-m, --model <string>`: Model to use (e.g., `deepseek-v3`)
+- `--no-interactive`: Disable interactive prompts (useful for scripts)
 
-### Usage in Clawdbot
+### Manage Designs
 
-You can directly use natural language instructions:
+List your recent designs:
 
-- "Help me design a tech-style event poster using Seede AI"
-- "Generate a UI interface with a similar style based on this image"
-- "Generate a set of minimalist style social media graphics for my brand"
+```bash
+seede designs
+```
 
-## API Reference
+**Options:**
 
-For detailed API documentation, please see [SKILL.md](./SKILL.md).
+- `-l, --limit <number>`: Number of designs to list (default: 40)
+- `-o, --offset <number>`: Pagination offset
+- `-s, --starred`: Filter by starred designs
+- `-q, --search <string>`: Search designs by keyword
+- `-t, --tag <string>`: Filter by tag
 
-## Workflow
+### Open a Design
 
-1. **Create Task**: Call `/api/task/create`.
-2. **Wait for Generation**: Designs typically take 30-90 seconds.
-3. **Get Results**: Once the task is complete, retrieve the design via `urls.image`.
+Get the URL of a specific design:
 
-## FAQ
+```bash
+seede open <designId>
+```
 
-- **Task Timeout**: Complex generations may take longer; the script supports automatic polling.
-- **Asset Referencing**: You need to upload the asset first to get a URL, or use the `@SeedeMaterial` syntax in the Prompt.
+### Upload Assets
 
-## About
+Upload an image to use in your designs:
 
-Built by **SeedeAI** for the OpenClaw Community 🦞.
+```bash
+seede upload ./path/to/image.png
+```
+
+After uploading, you will get an asset URL. You can use it in your prompt like this:
+`... @SeedeMaterial({"url":"<ASSET_URL>","tag":"reference"}) ...`
+
+### Other Commands
+
+- `seede whoami`: Check current login status.
+- `seede logout`: Clear local session.
+
+## Integration with OpenClaw (Agent Skill)
+
+To use Seede as a skill in OpenClaw or other AI agents:
+
+1. **Install the Skill**:
+   Copy the repository to your skill directory.
+
+   ```bash
+   cp -r seede-skill ~/.clawdbot/skills/seede
+   ```
+
+2. **Configure**:
+   Ensure the agent has access to `seede` command or invoke the script directly.
+   Set `SEEDE_API_TOKEN` in the agent's environment.
+
+3. **Natural Language Instructions**:
+   The agent can now interpret requests like:
+
+   > "Help me design a tech-style event poster using Seede AI"
+
+   And translate them into CLI commands:
+
+   ```bash
+   seede create --no-interactive --prompt "tech-style event poster" --scene "poster"
+   ```
 
 ## License
 
