@@ -1,23 +1,30 @@
 {
-  "name": "seede-skill",
+  "name": "seede-cli",
   "version": "1.0.0",
-  "description": "Seede AI integration skill. Generate professional designs from text or images.",
+  "description": "Seede AI CLI Tool",
+  "main": "bin/seede.js",
+  "bin": {
+    "seede": "./bin/seede.js"
+  },
+  "scripts": {
+    "start": "node bin/seede.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "keywords": [
     "seede",
     "ai",
-    "design",
-    "moltbot",
-    "clawdbot",
-    "skill",
-    "api",
-    "poster",
-    "ui"
+    "cli"
   ],
-  "author": "Hilongjw (github.com/hilongjw)",
+  "author": "Seede AI",
   "license": "MIT",
-  "clawdbot": {
-    "skillFile": "SKILL.md",
-    "category": "design",
-    "emoji": "🌱"
-  }
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "conf": "^10.2.0",
+    "dotenv": "^16.3.1",
+    "inquirer": "^8.2.5",
+    "ora": "^5.4.1",
+    "rxjs": "^7.8.2"
+  },
+  "type": "module"
 }

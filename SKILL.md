@@ -64,6 +64,9 @@ This skill includes a small helper script at `{baseDir}/scripts/seede.sh` that w
 # List tasks
 bash "{baseDir}/scripts/seede.sh" tasks
 
+# List designs
+bash "{baseDir}/scripts/seede.sh" designs
+
 # Create a design (defaults to 1080x1440)
 bash "{baseDir}/scripts/seede.sh" create "Event Poster" "Minimalist tech-style launch event poster @SeedeTheme({'value':'tech'})"
 

@@ -59,6 +59,31 @@ export SEEDE_API_TOKEN="您的_api_token"
 ./scripts/seede.sh models
 ```
 
+### 非交互模式 (Agent 专用)
+
+为了自动化或 Agent 调用，您可以使用标志来跳过交互式提示：
+
+```bash
+# 创建设计任务而不进行交互
+./bin/seede.js create --no-interactive \
+  -p "一张未来城市的海报" \
+  -n "城市海报" \
+  -s "poster" \
+  -f "png" \
+  --size "1080x1920"
+```
+
+**选项:**
+- `--no-interactive`: 禁用交互式提示 (非交互模式必须)
+- `-n, --name <string>`: 设计名称
+- `-p, --prompt <string>`: 设计描述 (必填)
+- `-s, --scene <string>`: 场景类型 (`socialMedia`, `poster`, `scrollytelling`)
+- `-f, --format <string>`: 输出格式 (`webp`, `png`, `jpg`)
+- `--size <string>`: 尺寸 (`1080x1440`, `1080x1920`, `1920x1080`, `Custom`)
+- `-w, --width <number>`: 自定义宽度
+- `-h, --height <string>`: 自定义高度
+- `-m, --model <string>`: 使用的模型
+
 ### 在 Clawdbot 中使用
 
 您可以直接使用自然语言指令：

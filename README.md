@@ -49,6 +49,9 @@ It is recommended to add this to your `~/.bashrc` or `~/.zshrc`.
 # View task list
 ./scripts/seede.sh tasks
 
+# View designs list
+./scripts/seede.sh designs
+
 # Get details of a specific task
 ./scripts/seede.sh get TASK_ID
 
@@ -58,6 +61,32 @@ It is recommended to add this to your `~/.bashrc` or `~/.zshrc`.
 # View available models
 ./scripts/seede.sh models
 ```
+
+### Non-Interactive Mode (For Agents)
+
+For automation or agent usage, you can use flags to skip prompts:
+
+```bash
+# Create a design without prompts
+./bin/seede.js create --no-interactive \
+  -p "A futuristic city poster" \
+  -n "City Poster" \
+  -s "poster" \
+  -f "png" \
+  --size "1080x1920"
+```
+
+**Options:**
+
+- `--no-interactive`: Disable interactive prompts (Required for non-interactive mode)
+- `-n, --name <string>`: Design name
+- `-p, --prompt <string>`: Design description (Required)
+- `-s, --scene <string>`: Scene type (`socialMedia`, `poster`, `scrollytelling`)
+- `-f, --format <string>`: Output format (`webp`, `png`, `jpg`)
+- `--size <string>`: Size (`1080x1440`, `1080x1920`, `1920x1080`, `Custom`)
+- `-w, --width <number>`: Custom width
+- `-h, --height <string>`: Custom height
+- `-m, --model <string>`: Model to use
 
 ### Usage in Clawdbot
 
