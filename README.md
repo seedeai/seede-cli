@@ -32,8 +32,8 @@ npm install -g seede-cli
 ### From Source
 
 ```bash
-git clone https://github.com/seede-ai/seede-skill.git
-cd seede-skill
+git clone https://github.com/seedeai/seede-cli.git
+cd seede-cli
 npm install
 npm link
 ```
