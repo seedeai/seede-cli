@@ -1,7 +1,7 @@
 {
   "name": "seede-cli",
-  "version": "0.0.2",
-  "description": "Seede AI CLI Tool",
+  "version": "0.0.3",
+  "description": "The ultimate AI design CLI for Agents and Developers. Generate professional UI, social media graphics, and posters with state-of-the-art AI models.",
   "main": "bin/seede.js",
   "bin": {
     "seede": "./bin/seede.js"
@@ -13,7 +13,14 @@
   "keywords": [
     "seede",
     "ai",
-    "cli"
+    "cli",
+    "ai-design",
+    "generative-ui",
+    "agent-skill",
+    "text-to-design",
+    "image-generation",
+    "design-automation",
+    "best-design-cli"
   ],
   "author": "Seede AI",
   "license": "MIT",
