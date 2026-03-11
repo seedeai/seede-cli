@@ -7,6 +7,7 @@ import { handleLogin, handleRegister } from '../lib/auth.js';
 import { handleCreate } from '../lib/commands/create.js';
 import { handleList, handleGetUrl } from '../lib/commands/designs.js';
 import { handleUpload } from '../lib/commands/upload.js';
+import { handleCreateToken, handleListTokens } from '../lib/commands/token.js';
 import { clearToken, getToken } from '../lib/config.js';
 
 const program = new Command();
@@ -86,6 +87,35 @@ program
       return;
     }
     await handleUpload(filePath);
+  });
+
+const tokenCommand = program.command('token').description('Manage API tokens');
+
+tokenCommand
+  .command('create')
+  .description('Create a new API token')
+  .option('-n, --name <string>', 'Token name')
+  .option('-e, --expiration <string>', 'Expiration in days')
+  .option('--no-interactive', 'Disable interactive prompts')
+  .action(async (options) => {
+    const token = getToken();
+    if (!token) {
+      console.log(chalk.red('You are not logged in. Please run "seede login" first.'));
+      return;
+    }
+    await handleCreateToken(options);
+  });
+
+tokenCommand
+  .command('list')
+  .description('List your API tokens')
+  .action(async () => {
+    const token = getToken();
+    if (!token) {
+      console.log(chalk.red('You are not logged in. Please run "seede login" first.'));
+      return;
+    }
+    await handleListTokens();
   });
 
 program

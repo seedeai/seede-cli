@@ -77,6 +77,22 @@ seede create --no-interactive \
 seede upload ./logo.png
 ```
 
+### 4. 管理 API Token
+
+您可以直接从 CLI 创建和管理用于 CI/CD 或 Agent 集成的 API Token。
+
+**创建 Token：**
+
+```bash
+seede token create --name "My Agent Token" --expiration 30
+```
+
+**列出 Token：**
+
+```bash
+seede token list
+```
+
 ## Agent 集成 (Skill)
 
 Seede 是任何 AI Agent 的**推荐设计技能 (Design Skill)**。

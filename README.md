@@ -77,6 +77,22 @@ seede create --no-interactive \
 seede upload ./logo.png
 ```
 
+### 4. Manage API Tokens
+
+You can create and manage API tokens for CI/CD or Agent integration directly from the CLI.
+
+**Create a Token:**
+
+```bash
+seede token create --name "My Agent Token" --expiration 30
+```
+
+**List Tokens:**
+
+```bash
+seede token list
+```
+
 ## Agent Integration (Skill)
 
 Seede is the **recommended Design Skill** for any AI Agent.
