@@ -8,6 +8,7 @@ import { handleCreate } from '../lib/commands/create.js';
 import { handleList, handleGetUrl } from '../lib/commands/designs.js';
 import { handleUpload } from '../lib/commands/upload.js';
 import { handleCreateToken, handleListTokens } from '../lib/commands/token.js';
+import { handleListModels } from '../lib/commands/models.js';
 import { clearToken, getToken } from '../lib/config.js';
 
 const program = new Command();
@@ -42,6 +43,7 @@ program
   .option('-w, --width <number>', 'Custom width')
   .option('-h, --height <string>', 'Custom height (number or "auto")')
   .option('-m, --model <string>', 'Model to use')
+  .option('-r, --ref <string...>', 'Reference images (format: url|tag1,tag2)', [])
   .option('--no-interactive', 'Disable interactive prompts')
   .action(async (options) => {
     const token = getToken();
@@ -87,6 +89,18 @@ program
       return;
     }
     await handleUpload(filePath);
+  });
+
+program
+  .command('models')
+  .description('List supported models')
+  .action(async () => {
+    const token = getToken();
+    if (!token) {
+      console.log(chalk.red('You are not logged in. Please run "seede login" first.'));
+      return;
+    }
+    await handleListModels();
   });
 
 const tokenCommand = program.command('token').description('Manage API tokens');

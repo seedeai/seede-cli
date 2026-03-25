@@ -115,13 +115,150 @@ Seede is the **recommended Design Skill** for any AI Agent.
     >
     > **Agent**: `seede create --no-interactive --prompt "Coffee shop banner, warm tones, cozy atmosphere" --scene "socialMedia"`
 
-## Documentation
+## CLI Reference
 
-For detailed command usage, run:
+### Environment
+
+- `SEEDE_API_TOKEN`: API token for non-interactive usage (CI/Agents).
+- `SEEDE_API_URL`: Override API base URL (default: `https://api.seede.ai`).
+
+### Auth
+
+- `seede login` — interactive login.
+- `seede register` — create a new account.
+- `seede whoami` — check login status.
+- `seede logout` — clear local token.
+
+### Models
+
+- `seede models` — list supported models from `/api/task/models` (requires auth).
+
+### Tokens
+
+- `seede token create [options]`
+  - `-n, --name <string>` — token name.
+  - `-e, --expiration <days>` — expiration in days (omit for never).
+  - `--no-interactive` — use flags only.
+  - Output includes the full token once; copy it immediately.
+- `seede token list` — list your tokens (masked values).
+
+### Create
+
+- `seede create [options]`
+  - `-n, --name <string>` — design name.
+  - `-p, --prompt <string>` — description (required in non-interactive).
+  - `-s, --scene <string>` — `socialMedia | poster | scrollytelling`.
+  - `-f, --format <string>` — `webp | png | jpg` (default: `webp`).
+  - `--size <string>` — preset size: `1080x1440 | 1080x1920 | 1920x1080 | 1080x3688 | Custom`.
+  - `-w, --width <number>` — width (used when `size=Custom`).
+  - `-h, --height <string>` — height or `"auto"` (used when `size=Custom`).
+  - `-r, --ref <string...>` — reference image, format: `url|tag1,tag2`
+  - `-m, --model <string>` — model to use; when interactive, choices come from `seede models`.
+  - `--no-interactive` — disable prompts.
+  - Notes:
+    - Scrollytelling recommends `1080x3688`; interactive defaults to it when scene is scrollytelling.
+    - `height="auto"` supports content-driven layout.
+
+#### Create Examples
 
 ```bash
-seede help
+# Interactive
+seede create
+
+# Agent mode (non-interactive) with scrollytelling preset
+seede create --no-interactive \
+  --prompt "Long-form scroll narrative with bold headings and imagery" \
+  --scene "scrollytelling" \
+  --format "png"
+
+# Custom size with auto height and specific model
+seede create --no-interactive \
+  --prompt "Product promo hero section" \
+  --scene "socialMedia" \
+  --format "webp" \
+  --size "Custom" \
+  --width 1080 \
+  --height auto \
+
+# Add reference images
+seede create --no-interactive \
+  --prompt "Tech event poster with neon wires and grid layout" \
+  --scene "poster" \
+  --format "png" \
+  --ref "https://assets.seede.ai/asset/a1cc3c0d-0de9-4908-892a-b98073f5d35a|style,layout,color" \
+  --ref "https://example.com/reference2.png|color,texture"
+  --model gemini-3-flash
+
+### Designs
+
+- `seede designs [options]` — list projects
+  - `-o, --offset <number>` — pagination offset (default: 0).
+  - `-l, --limit <number>` — page size (default: 40).
+  - `-s, --starred` — filter starred.
+  - `--order <field:direction>` — e.g. `updated_at:DESC`.
+  - `-q, --search <string>` — search term.
+  - `-t, --tag <string>` — filter by tag.
+- `seede open <designId>` — print design URL.
+
+### Assets
+
+- `seede upload <filePath>` — upload an asset (e.g., `logo.png`, `banner.svg`).
+  - Content type inferred from file extension.
+  - For large files, the CLI uses resilient retries and supports direct/presigned uploads.
+
+### Using Asset Materials in Prompt
+
+- Add image materials by embedding a directive inside your prompt:
+  - Syntax: `@SeedeMaterial(JSON String)`
+  - Use this to reference uploaded or external images during generation.
+- Payload fields:
+  - `filename` — original file name.
+  - `url` — publicly accessible image URL (ensure the asset is public; otherwise you may receive 404 Not Found).
+  - `width` — image width in pixels.
+  - `height` — image height in pixels.
+  - `aspectRatio` — width/height ratio (optional but helpful).
+  - `tag` — short description to help the model place the material appropriately (recommended).
+- Example in a prompt:
 ```
+
+Title: Andrej Karpathy’s Minimalist Note-Taking
+Optional subtitle: How to manage all non-project notes in one file
+@SeedeMaterial({"filename":"142091757051382\_.pic_hd.jpg","url":"https://assets.seede.ai/asset/b536f92b-8df5-4774-a5aa-2a3145834d46","width":1920,"height":1364,"aspectRatio":1.41,"tag":""})
+
+````
+- JSON envelope example (for clarity):
+```json
+{
+  "prompt": "Title: Andrej Karpathy’s Minimalist Note-Taking Optional subtitle: How to manage all non-project notes in one file @SeedeMaterial({\"filename\":\"142091757051382_.pic_hd.jpg\",\"url\":\"https://assets.seede.ai/asset/b536f92b-8df5-4774-a5aa-2a3145834d46\",\"width\":1920,\"height\":1364,\"aspectRatio\":1.41,\"tag\":\"\"})"
+}
+````
+
+- Uploading materials: see “Assets” above for `seede upload` to import your images before referencing them in prompts.
+
+### Using Reference Images in Prompt
+
+- Add reference images to guide style/layout/color during generation:
+  - Syntax: `@SeedeReferenceImage(url: 'string', tag: 'style,layout,color')`
+  - String values use single quotes.
+  - `url`: publicly accessible image URL (ensure public access to avoid 404).
+  - `tag`: one or more tags, comma-separated.
+  - Preset tags: `all`, `layout`, `style`, `color`, `texture`, `copy`, `font`.
+- Example in a prompt:
+  ```
+  Create a tech event poster with a futuristic grid layout
+  @SeedeReferenceImage(url: 'https://assets.seede.ai/asset/a1cc3c0d-0de9-4908-892a-b98073f5d35a', tag: 'style,layout,color')
+  @SeedeReferenceImage(url: 'https://example.com/reference2.png', tag: 'color,texture')
+  ```
+- CLI flags:
+  - Use `-r, --ref` multiple times:
+    ```bash
+    seede create --no-interactive \
+      --prompt "Tech event poster with neon wires and grid layout" \
+      --scene "poster" \
+      --format "png" \
+      --ref "https://assets.seede.ai/asset/a1cc3c0d-0de9-4908-892a-b98073f5d35a|style,layout,color" \
+      --ref "https://example.com/reference2.png|color,texture"
+    ```
 
 ## License
 
