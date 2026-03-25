@@ -237,7 +237,7 @@ Optional subtitle: How to manage all non-project notes in one file
 
 ### Using Reference Images in Prompt
 
-- Add reference images to guide style/layout/color during generation:
+- Add reference image to guide style/layout/color during generation:
   - Syntax: `@SeedeReferenceImage(url: 'string', tag: 'style,layout,color')`
   - String values use single quotes.
   - `url`: publicly accessible image URL (ensure public access to avoid 404).
@@ -247,7 +247,6 @@ Optional subtitle: How to manage all non-project notes in one file
   ```
   Create a tech event poster with a futuristic grid layout
   @SeedeReferenceImage(url: 'https://assets.seede.ai/asset/a1cc3c0d-0de9-4908-892a-b98073f5d35a', tag: 'style,layout,color')
-  @SeedeReferenceImage(url: 'https://example.com/reference2.png', tag: 'color,texture')
   ```
 - CLI flags:
   - Use `-r, --ref` multiple times:
@@ -256,8 +255,7 @@ Optional subtitle: How to manage all non-project notes in one file
       --prompt "Tech event poster with neon wires and grid layout" \
       --scene "poster" \
       --format "png" \
-      --ref "https://assets.seede.ai/asset/a1cc3c0d-0de9-4908-892a-b98073f5d35a|style,layout,color" \
-      --ref "https://example.com/reference2.png|color,texture"
+      --ref "https://assets.seede.ai/asset/a1cc3c0d-0de9-4908-892a-b98073f5d35a|style,layout,color"
     ```
 
 ## License
